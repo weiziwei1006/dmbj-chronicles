@@ -1,0 +1,240 @@
+---
+import NarrativeLayout from '../../layouts/NarrativeLayout.astro';
+import SceneRenderer from '../../components/narrative/SceneRenderer.vue';
+import NarrativeText from '../../components/narrative/NarrativeText.vue';
+import { loadCharacterProfile, loadEventDetail, getEventNavigation } from '../../utils/dataLoader';
+
+export async function getStaticPaths() {
+  const characterIds = ['wuxie'];
+  const timelineMod = await import('../../data/common/timeline.json');
+  const timeline = timelineMod.default as { id: string; characterIds: string[] }[];
+  const paths: { params: { character: string; slug: string } }[] = [];
+
+  for (const characterId of characterIds) {
+    for (const event of timeline) {
+      if (event.characterIds.includes(characterId)) {
+        paths.push({
+          params: { character: characterId, slug: event.id },
+        });
+      }
+    }
+  }
+
+  return paths;
+}
+
+const { character, slug } = Astro.params;
+const eventId = Array.isArray(slug) ? slug[0] : slug;
+
+if (!character || !eventId) {
+  return Astro.redirect('/');
+}
+
+const profile = await loadCharacterProfile(character);
+if (!profile) {
+  return Astro.redirect('/');
+}
+
+const eventDetail = await loadEventDetail(character, eventId);
+const navigation = await getEventNavigation(character, eventId);
+
+// 序列化数据传给 Vue 组件
+const narrativeData = eventDetail.perspective.narrative;
+const keyQuotes = eventDetail.perspective.keyQuotes;
+const emotion = eventDetail.perspective.emotion;
+const visualsData = eventDetail.sceneVisuals;
+---
+
+<NarrativeLayout character={profile} title={eventDetail.title} eventId={eventId}>
+  <article class="event-detail">
+    <!-- 场景渲染器 -->
+    <SceneRenderer
+      client:load
+      visuals={visualsData}
+      characterId={character}
+    />
+
+    <!-- 事件信息头 -->
+    <header class="event-header container-narrow py-12">
+      <div class="mb-4 flex items-center gap-3 text-sm">
+        <span class="rounded-full bg-[var(--color-bg-elevated)] px-3 py-1 text-[var(--color-theme)]">
+          事件 {String(eventDetail.order).padStart(2, '0')}
+        </span>
+        <span class="text-text-muted">{eventDetail.timeLabel}</span>
+        <span class="text-text-dim">·</span>
+        <span class="text-text-muted">{eventDetail.location}</span>
+      </div>
+
+      <h1 class="mb-6 text-text-primary">{eventDetail.title}</h1>
+
+      <p class="mb-8 text-lg leading-relaxed text-text-secondary">
+        {eventDetail.summary}
+      </p>
+
+      {eventDetail.publicDescription && (
+        <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] p-6">
+          <h3 class="mb-3 flex items-center gap-2 text-sm font-medium text-text-muted">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            背景资料
+          </h3>
+          <p class="text-sm leading-relaxed text-text-secondary">
+            {eventDetail.publicDescription}
+          </p>
+        </div>
+      )}
+    </header>
+
+    <!-- 叙事内容 -->
+    <section class="narrative-section container-narrow pb-16">
+      <div class="mb-8 flex items-center gap-3">
+        <div class="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--color-border)]"></div>
+        <h2 class="text-sm tracking-widest text-text-muted">
+          {profile.name} · 第一人称叙述
+        </h2>
+        <div class="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--color-border)]"></div>
+      </div>
+
+      <NarrativeText
+        client:load
+        narrative={narrativeData}
+        keyQuotes={keyQuotes}
+        emotion={emotion}
+      />
+    </section>
+
+    <!-- 场景列表 -->
+    {eventDetail.scenes.length > 0 && (
+      <section class="scenes-section container-narrow pb-16">
+        <div class="mb-8 flex items-center gap-3">
+          <div class="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--color-border)]"></div>
+          <h2 class="text-sm tracking-widest text-text-muted">场景索引</h2>
+          <div class="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--color-border)]"></div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          {eventDetail.scenes.map((scene, i) => (
+            <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] p-5 transition-colors hover:border-[var(--color-border-hover)]">
+              <div class="mb-2 flex items-center gap-2">
+                <span class="text-xs text-[var(--color-theme)]">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 class="text-base font-medium text-text-primary">{scene.name}</h3>
+              </div>
+              <p class="mb-3 text-sm leading-relaxed text-text-secondary">
+                {scene.description}
+              </p>
+              <p class="flex items-center gap-1.5 text-xs text-text-muted">
+                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {scene.location}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- 相关信息 -->
+    <section class="related-section container-narrow pb-16">
+      <div class="grid gap-6 md:grid-cols-2">
+        <!-- 相关物品 -->
+        {eventDetail.relatedItems.length > 0 && (
+          <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] p-6">
+            <h3 class="mb-4 flex items-center gap-2 text-sm font-medium text-text-muted">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              相关物品
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              {eventDetail.relatedItems.map((item) => (
+                <span class="rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-1.5 text-sm text-text-secondary">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- 相关人物 -->
+        {eventDetail.relatedCharacters.length > 0 && (
+          <div class="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] p-6">
+            <h3 class="mb-4 flex items-center gap-2 text-sm font-medium text-text-muted">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              相关人物
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              {eventDetail.relatedCharacters.map((char) => (
+                <span class="rounded-md border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-3 py-1.5 text-sm text-text-secondary">
+                  {char}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- 上下事件导航 -->
+    <nav class="event-nav border-t border-[var(--color-border)] py-8">
+      <div class="container-narrow flex items-center justify-between gap-4">
+        {navigation.prev ? (
+          <a
+            href={`/${character}/${navigation.prev.id}`}
+            class="group flex items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] px-4 py-3 transition-all hover:border-[var(--color-theme)] hover:shadow-md"
+          >
+            <svg class="h-5 w-5 text-text-muted transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            <div>
+              <p class="text-xs text-text-muted">上一事件</p>
+              <p class="text-sm font-medium text-text-primary">{navigation.prev.title}</p>
+            </div>
+          </a>
+        ) : (
+          <div class="flex items-center gap-3 px-4 py-3 text-sm text-text-dim">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            已是第一个事件
+          </div>
+        )}
+
+        <a
+          href={`/${character}/`}
+          class="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] px-4 py-3 text-sm text-text-secondary transition-all hover:border-[var(--color-theme)] hover:text-text-primary"
+        >
+          时间线
+        </a>
+
+        {navigation.next ? (
+          <a
+            href={`/${character}/${navigation.next.id}`}
+            class="group flex items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] px-4 py-3 transition-all hover:border-[var(--color-theme)] hover:shadow-md"
+          >
+            <div class="text-right">
+              <p class="text-xs text-text-muted">下一事件</p>
+              <p class="text-sm font-medium text-text-primary">{navigation.next.title}</p>
+            </div>
+            <svg class="h-5 w-5 text-text-muted transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        ) : (
+          <div class="flex items-center gap-3 px-4 py-3 text-sm text-text-dim">
+            已是最后一个事件
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        )}
+      </div>
+    </nav>
+  </article>
+</NarrativeLayout>

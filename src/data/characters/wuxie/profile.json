@@ -1,0 +1,10 @@
+{
+  "id": "wuxie",
+  "name": "吴邪",
+  "alias": "天真",
+  "avatar": "/images/characters/wuxie/avatar.svg",
+  "themeColor": "#d4a373",
+  "themeClass": "theme-wuxie",
+  "bio": "《盗墓笔记》主角，出身长沙老九门盗墓世家，在杭州经营吴山居古董店。好奇心强、重情义，原本只想安稳度日，却被一卷战国帛书卷入了长达十年的迷局。",
+  "defaultBgm": "/audio/bgm/wuxie-theme.mp3"
+}

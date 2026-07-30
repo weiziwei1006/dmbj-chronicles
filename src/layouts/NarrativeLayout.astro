@@ -1,0 +1,77 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { CharacterProfile } from '../types/data';
+
+export interface Props {
+  character?: CharacterProfile;
+  title?: string;
+  eventId?: string;
+}
+
+const { character, title } = Astro.props;
+const themeClass = character?.themeClass ?? '';
+---
+
+<BaseLayout title={title} themeClass={themeClass}>
+  <div class="narrative-layout flex min-h-screen">
+    <!-- 侧边栏 -->
+    <aside class="narrative-sidebar hidden w-72 shrink-0 border-r border-[var(--color-border)] lg:block">
+      <div class="sticky top-0 flex h-screen flex-col p-6">
+        {character && (
+          <>
+            <div class="mb-8 text-center">
+              <div
+                class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-[var(--color-theme)]"
+                style={`box-shadow: 0 0 20px var(--color-theme-glow);`}
+              >
+                <img
+                  src={character.avatar}
+                  alt={character.name}
+                  class="h-16 w-16 rounded-full object-cover"
+                  width="64"
+                  height="64"
+                />
+              </div>
+              <h2 class="text-xl font-semibold text-text-primary">
+                {character.name}
+              </h2>
+              <p class="text-sm text-text-muted">「{character.alias}」</p>
+            </div>
+
+            <div class="mb-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-card)] p-4">
+              <p class="text-xs leading-relaxed text-text-secondary">
+                {character.bio}
+              </p>
+            </div>
+
+            <nav class="flex flex-col gap-2">
+              <a
+                href={`/${character.id}/`}
+                class="rounded-md px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-text-primary"
+              >
+                ← 返回时间线
+              </a>
+              <a
+                href="/"
+                class="rounded-md px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-[var(--color-bg-elevated)] hover:text-text-primary"
+              >
+                切换角色
+              </a>
+            </nav>
+          </>
+        )}
+
+        <div class="mt-auto pt-6">
+          <p class="text-xs text-text-dim">
+            视角切换功能将在后续版本开放
+          </p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 主内容 -->
+    <div class="narrative-content flex-1 min-w-0">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>

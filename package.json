@@ -1,0 +1,34 @@
+{
+  "name": "dmbj-chronicles",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "盗墓笔记 · 交互编年史 — 基于《盗墓笔记》世界观的交互式叙事网页应用",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "lint": "eslint . --ext .ts,.vue,.astro",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.4",
+    "@astrojs/vue": "^4.5.3",
+    "astro": "^4.16.18",
+    "gsap": "^3.12.5",
+    "tailwindcss": "^3.4.17",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-astro": "^1.3.1",
+    "eslint-plugin-vue": "^9.32.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "typescript": "^5.7.3"
+  }
+}

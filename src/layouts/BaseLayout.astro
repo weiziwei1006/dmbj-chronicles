@@ -1,0 +1,96 @@
+---
+import '../styles/globals.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  themeClass?: string;
+}
+
+const {
+  title = '盗墓笔记 · 交互编年史',
+  description = '基于《盗墓笔记》世界观的交互式叙事网页应用，多人物视角按时间顺序讲述故事。',
+  themeClass = '',
+} = Astro.props;
+
+const fullTitle = title === '盗墓笔记 · 交互编年史' ? title : `${title} | 盗墓笔记 · 交互编年史`;
+---
+
+<!doctype html>
+<html lang="zh-CN" class={`bg-primary ${themeClass}`}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/images/common/logo.svg" />
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>{fullTitle}</title>
+  </head>
+  <body class="bg-noise">
+    <div class="fog-overlay"></div>
+    <header class="site-header">
+      <nav class="container-wide flex items-center justify-between py-4">
+        <a href="/" class="flex items-center gap-3">
+          <img
+            src="/images/common/logo.svg"
+            alt="盗墓笔记"
+            class="h-8 w-8"
+            width="32"
+            height="32"
+          />
+          <span class="text-lg font-semibold text-text-primary">
+            盗墓笔记 · 交互编年史
+          </span>
+        </a>
+        <div class="hidden items-center gap-6 md:flex">
+          <a
+            href="/"
+            class="text-sm text-text-secondary transition-colors hover:text-text-primary"
+          >
+            首页
+          </a>
+          <a
+            href="/wuxie/"
+            class="text-sm text-text-secondary transition-colors hover:text-text-primary"
+          >
+            吴邪视角
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="relative z-10">
+      <slot />
+    </main>
+
+    <footer class="relative z-10 border-t border-[var(--color-border)] py-8">
+      <div class="container-wide flex flex-col items-center justify-between gap-4 text-sm text-text-muted md:flex-row">
+        <p>盗墓笔记 · 交互编年史 — 非营利同人项目</p>
+        <p>数据基于原著整理，仅供叙事体验</p>
+      </div>
+    </footer>
+
+    <style>
+      .site-header {
+        position: relative;
+        z-index: 10;
+        border-bottom: 1px solid var(--color-border);
+        backdrop-filter: blur(8px);
+        background: rgba(10, 6, 5, 0.8);
+      }
+    </style>
+  </body>
+</html>

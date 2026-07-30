@@ -1,0 +1,153 @@
+---
+import NarrativeLayout from '../../layouts/NarrativeLayout.astro';
+import { loadCharacterProfile, loadCharacterEvents } from '../../utils/dataLoader';
+import type { EventWithPerspective } from '../../types/data';
+
+export async function getStaticPaths() {
+  const characterIds = ['wuxie'];
+  return characterIds.map((id) => ({
+    params: { character: id },
+  }));
+}
+
+const { character } = Astro.params;
+const profile = await loadCharacterProfile(character!);
+
+if (!profile) {
+  return Astro.redirect('/');
+}
+
+const events = await loadCharacterEvents(character!);
+---
+
+<NarrativeLayout character={profile} title={`${profile.name} · 时间线`}>
+  <div class="character-timeline">
+    <!-- 角色头部 -->
+    <section class="character-header py-16 px-6 text-center">
+      <div
+        class="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full border-2 border-[var(--color-theme)]"
+        style="box-shadow: 0 0 40px var(--color-theme-glow);"
+      >
+        <img
+          src={profile.avatar}
+          alt={profile.name}
+          class="h-24 w-24 rounded-full object-cover"
+          width="96"
+          height="96"
+        />
+      </div>
+      <h1 class="mb-2 text-text-primary">{profile.name}</h1>
+      <p class="mb-4 text-lg text-[var(--color-theme)]">「{profile.alias}」</p>
+      <p class="mx-auto max-w-2xl text-sm leading-relaxed text-text-secondary">
+        {profile.bio}
+      </p>
+    </section>
+
+    <!-- 时间线 -->
+    <section class="timeline-section pb-20">
+      <div class="container-narrow">
+        <div class="mb-10 text-center">
+          <h2 class="mb-2 text-text-primary">事件时间线</h2>
+          <p class="text-sm text-text-muted">共 {events.length} 个事件</p>
+        </div>
+
+        <!-- 时间线主体 -->
+        <div class="timeline-container relative">
+          <!-- 中轴线 -->
+          <div
+            class="timeline-line absolute left-4 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[var(--color-border-hover)] to-transparent md:left-1/2 md:-translate-x-1/2"
+          >
+          </div>
+
+          {
+            events.map((event: EventWithPerspective, index: number) => (
+              <div
+                class:list={[
+                  'timeline-item relative mb-12 flex items-start gap-6',
+                  'md:items-center',
+                  index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse',
+                ]}
+              >
+                {/* 时间线节点 */}
+                <div class="timeline-node absolute left-4 top-6 z-10 -translate-x-1/2 md:left-1/2 md:top-1/2 md:-translate-y-1/2">
+                  <div
+                    class="h-4 w-4 rounded-full border-2 border-[var(--color-theme)] bg-[var(--color-bg)] transition-all duration-300 hover:scale-150"
+                    style="box-shadow: 0 0 12px var(--color-theme-glow);"
+                  />
+                </div>
+
+                {/* 事件卡片 */}
+                <div class="ml-12 w-full md:ml-0 md:w-[calc(50%-2rem)]">
+                  <a
+                    href={`/${character}/${event.id}`}
+                    class="event-card block rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-6 transition-all duration-300 hover:border-[var(--color-theme)] hover:shadow-lg"
+                  >
+                    <div class="mb-3 flex items-center gap-3">
+                      <span class="rounded-full bg-[var(--color-bg-elevated)] px-3 py-1 text-xs text-[var(--color-theme)]">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <span class="text-xs text-text-muted">{event.timeLabel}</span>
+                    </div>
+
+                    <h3 class="mb-3 text-xl font-semibold text-text-primary transition-colors hover:text-[var(--color-theme)]">
+                      {event.title}
+                    </h3>
+
+                    <p class="mb-4 text-sm leading-relaxed text-text-secondary line-clamp-2">
+                      {event.summary}
+                    </p>
+
+                    <div class="mb-4 flex flex-wrap gap-4 text-sm text-text-muted">
+                      <span class="flex items-center gap-1.5">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        {event.location}
+                      </span>
+                    </div>
+
+                    {event.perspective.emotion && (
+                      <p class="mb-3 text-sm text-text-muted">
+                        情感：{event.perspective.emotion}
+                      </p>
+                    )}
+
+                    {event.perspective.narrative.length > 0 && (
+                      <p class="border-l-2 border-[var(--color-border)] pl-3 text-sm italic leading-relaxed text-text-secondary line-clamp-2">
+                        {event.perspective.narrative[0].paragraph}
+                      </p>
+                    )}
+
+                    <div class="mt-4 flex items-center gap-2 text-sm text-[var(--color-theme)]">
+                      <span>阅读详情</span>
+                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </div>
+                  </a>
+                </div>
+
+                {/* 另一侧占位（桌面端） */}
+                <div class="hidden md:block md:w-[calc(50%-2rem)]"></div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  </div>
+</NarrativeLayout>
+
+<style>
+  .character-header {
+    background: radial-gradient(ellipse at center, var(--color-theme-glow) 0%, transparent 70%);
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

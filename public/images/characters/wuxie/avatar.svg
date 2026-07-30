@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0f0a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0605;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4a373;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7a6b5a;stop-opacity:1" />
+    </linearGradient>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="200" height="200" rx="100" fill="url(#bgGrad)"/>
+
+  <!-- 外环 -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#accentGrad)" stroke-width="1" opacity="0.3"/>
+  <circle cx="100" cy="100" r="80" fill="none" stroke="url(#accentGrad)" stroke-width="0.5" opacity="0.2"/>
+
+  <!-- 人物剪影 - 简化的古董商人形象 -->
+  <!-- 头部 -->
+  <circle cx="100" cy="75" r="22" fill="none" stroke="url(#accentGrad)" stroke-width="2" filter="url(#softGlow)"/>
+
+  <!-- 眼睛 -->
+  <circle cx="92" cy="73" r="2" fill="#d4a373" opacity="0.8"/>
+  <circle cx="108" cy="73" r="2" fill="#d4a373" opacity="0.8"/>
+
+  <!-- 嘴 -->
+  <path d="M92 85 Q100 88 108 85" fill="none" stroke="#d4a373" stroke-width="1" opacity="0.5"/>
+
+  <!-- 身体 -->
+  <path d="M70 140 Q70 110 100 105 Q130 110 130 140 L130 170 Q100 175 70 170 Z"
+        fill="none" stroke="url(#accentGrad)" stroke-width="2" filter="url(#softGlow)"/>
+
+  <!-- 衣领 -->
+  <path d="M88 105 L100 115 L112 105" fill="none" stroke="url(#accentGrad)" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- 纽扣 -->
+  <circle cx="100" cy="125" r="1.5" fill="#d4a373" opacity="0.7"/>
+  <circle cx="100" cy="140" r="1.5" fill="#d4a373" opacity="0.7"/>
+  <circle cx="100" cy="155" r="1.5" fill="#d4a373" opacity="0.7"/>
+
+  <!-- 装饰：古铜钱图案 -->
+  <circle cx="65" cy="120" r="6" fill="none" stroke="#7a6b5a" stroke-width="1" opacity="0.3"/>
+  <rect x="62" y="117" width="6" height="6" fill="none" stroke="#7a6b5a" stroke-width="0.5" opacity="0.3"/>
+
+  <circle cx="135" cy="130" r="5" fill="none" stroke="#7a6b5a" stroke-width="1" opacity="0.3"/>
+  <rect x="132.5" y="127.5" width="5" height="5" fill="none" stroke="#7a6b5a" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- 底部文字 -->
+  <text x="100" y="195" text-anchor="middle" font-family="serif" font-size="10" fill="#d4a373" opacity="0.5">
+    吴邪
+  </text>
+</svg>

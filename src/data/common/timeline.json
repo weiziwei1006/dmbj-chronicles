@@ -1,0 +1,18 @@
+[
+  {
+    "id": "event_001",
+    "order": 1,
+    "title": "七星鲁王宫",
+    "timeLabel": "2003年2月",
+    "location": "山东临沂蒙山平邑县",
+    "characterIds": ["wuxie", "zhangqiling", "wangpangzi"]
+  },
+  {
+    "id": "event_002",
+    "order": 2,
+    "title": "怒海潜沙",
+    "timeLabel": "2003年3月",
+    "location": "中国南海·西沙群岛",
+    "characterIds": ["wuxie", "zhangqiling", "wangpangzi"]
+  }
+]

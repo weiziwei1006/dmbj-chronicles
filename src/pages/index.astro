@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadAllCharacters, loadSettings } from '../utils/dataLoader';
+import type { CharacterProfile } from '../types/data';
+
+const settings = await loadSettings();
+const characters = await loadAllCharacters();
+---
+
+<BaseLayout title={settings.siteTitle}>
+  <!-- Hero Section -->
+  <section class="hero-section relative flex min-h-[80vh] items-center justify-center overflow-hidden pt-20 pb-24">
+    <div class="hero-bg absolute inset-0"></div>
+    <div class="hero-content relative z-10 px-6 text-center">
+      <p class="mb-4 text-sm tracking-[0.3em] text-text-muted animate-fade-in">
+        基于南派三叔《盗墓笔记》
+      </p>
+      <h1 class="mb-6 text-gradient font-bold animate-fade-in-up">
+        盗墓笔记 · 交互编年史
+      </h1>
+      <p class="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-text-secondary animate-fade-in-up" style="animation-delay: 0.2s;">
+        多人物视角，按时间顺序，亲历那些深埋于地下的秘密。<br/>
+        选择你的视角，开始一段尘封的旅程。
+      </p>
+      <div class="flex justify-center gap-4 animate-fade-in-up" style="animation-delay: 0.4s;">
+        <a
+          href="#characters"
+          class="inline-flex items-center gap-2 rounded-md border border-[var(--color-theme)] bg-[var(--color-theme)] px-7 py-3 text-sm font-medium text-[var(--color-bg)] transition-all hover:brightness-110 hover:shadow-lg"
+          style="box-shadow: 0 0 20px var(--color-theme-glow);"
+        >
+          选择视角
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 滚动提示 -->
+  <div class="flex flex-col items-center gap-2 py-6 text-text-muted animate-pulse-slow">
+    <span class="text-xs">向下滚动</span>
+    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+    </svg>
+  </div>
+
+  <!-- Character Selection -->
+  <section id="characters" class="py-20">
+    <div class="container-wide">
+      <div class="mb-12 text-center">
+        <h2 class="mb-3 text-text-primary">选择视角</h2>
+        <p class="text-text-muted">每一位亲历者，都有自己看到的故事</p>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {characters.map((character: CharacterProfile) => (
+          <a
+            href={`/${character.id}/`}
+            class="character-card group relative overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-8 transition-all duration-500 hover:border-[var(--color-theme)] hover:shadow-xl"
+            style={`--char-theme: ${character.themeColor};`}
+          >
+            <!-- 光晕效果 -->
+            <div
+              class="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              style={`background: radial-gradient(circle at 50% 0%, ${character.themeColor}22, transparent 70%);`}
+            ></div>
+
+            <div class="relative z-10">
+              <!-- 头像 -->
+              <div class="mb-6 flex justify-center">
+                <div
+                  class="relative flex h-24 w-24 items-center justify-center rounded-full border-2 transition-transform duration-500 group-hover:scale-110"
+                  style={`border-color: ${character.themeColor}; box-shadow: 0 0 30px ${character.themeColor}33;`}
+                >
+                  <img
+                    src={character.avatar}
+                    alt={character.name}
+                    class="h-20 w-20 rounded-full object-cover"
+                    width="80"
+                    height="80"
+                  />
+                </div>
+              </div>
+
+              <!-- 信息 -->
+              <div class="text-center">
+                <h3 class="mb-1 text-xl font-semibold text-text-primary">
+                  {character.name}
+                </h3>
+                <p class="mb-4 text-sm" style={`color: ${character.themeColor};`}>
+                  「{character.alias}」
+                </p>
+                <p class="text-sm leading-relaxed text-text-secondary">
+                  {character.bio}
+                </p>
+              </div>
+
+              <!-- 进入提示 -->
+              <div class="mt-6 flex items-center justify-center gap-2 text-sm text-text-muted transition-colors group-hover:text-text-primary">
+                <span>进入视角</span>
+                <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </div>
+          </a>
+        ))}
+
+        <!-- 占位卡片：即将开放的角色 -->
+        <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--color-border)] p-8 text-center opacity-50">
+          <div class="mb-4 flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-[var(--color-border)]">
+            <svg class="h-10 w-10 text-text-dim" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+          <h3 class="mb-1 text-lg text-text-muted">更多视角</h3>
+          <p class="text-sm text-text-dim">张起灵、王胖子等视角<br/>即将开放</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-section {
+    background: linear-gradient(180deg, #0a0605 0%, #14100e 50%, #0a0605 100%);
+  }
+
+  .hero-bg {
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(212, 163, 115, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 30%, rgba(92, 26, 26, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(74, 107, 61, 0.05) 0%, transparent 50%);
+  }
+
+  .character-card {
+    min-height: 320px;
+  }
+</style>
