@@ -14,5 +14,61 @@
     "timeLabel": "2003年3月",
     "location": "中国南海·西沙群岛",
     "characterIds": ["wuxie", "zhangqiling", "wangpangzi"]
+  },
+  {
+    "id": "event_003",
+    "order": 3,
+    "title": "秦岭神树",
+    "timeLabel": "2003年秋",
+    "location": "陕西·秦岭腹地",
+    "characterIds": ["wuxie"]
+  },
+  {
+    "id": "event_004",
+    "order": 4,
+    "title": "云顶天宫",
+    "timeLabel": "2003年冬",
+    "location": "吉林·长白山",
+    "characterIds": ["wuxie", "zhangqiling", "wangpangzi"]
+  },
+  {
+    "id": "event_005",
+    "order": 5,
+    "title": "蛇沼鬼城",
+    "timeLabel": "2004年5月",
+    "location": "青海·格尔木·西王母国遗址",
+    "characterIds": ["wuxie", "zhangqiling", "wangpangzi"]
+  },
+  {
+    "id": "event_006",
+    "order": 6,
+    "title": "谜海归巢",
+    "timeLabel": "2004年夏",
+    "location": "青海·西王母宫",
+    "characterIds": ["wuxie", "zhangqiling", "wangpangzi"]
+  },
+  {
+    "id": "event_007",
+    "order": 7,
+    "title": "阴山古楼",
+    "timeLabel": "2004年夏末",
+    "location": "广西·巴乃",
+    "characterIds": ["wuxie", "zhangqiling", "wangpangzi"]
+  },
+  {
+    "id": "event_008",
+    "order": 8,
+    "title": "邛笼石影",
+    "timeLabel": "2004年秋",
+    "location": "北京·四川·广西",
+    "characterIds": ["wuxie", "zhangqiling", "wangpangzi"]
+  },
+  {
+    "id": "event_009",
+    "order": 9,
+    "title": "大结局·十年之约",
+    "timeLabel": "2005年 / 2015年",
+    "location": "广西·巴乃 / 吉林·长白山",
+    "characterIds": ["wuxie", "zhangqiling", "wangpangzi"]
   }
 ]

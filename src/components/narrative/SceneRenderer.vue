@@ -37,7 +37,19 @@ const gradientStyle = computed(() => {
   };
 });
 
-const particles = computed(() => {
+interface Particle {
+  id: number;
+  left: number;
+  top: number;
+  size: number;
+  duration: number;
+  delay: number;
+  opacity: number;
+}
+
+const particles = ref<Particle[]>([]);
+
+function generateParticles(): Particle[] {
   const count = 20;
   return Array.from({ length: count }, (_, i) => ({
     id: i,
@@ -48,7 +60,7 @@ const particles = computed(() => {
     delay: Math.random() * 5,
     opacity: Math.random() * 0.4 + 0.1,
   }));
-});
+}
 
 const atmosphereTags = computed(() => {
   return props.visuals.atmosphere.split('、').filter(Boolean);
@@ -58,6 +70,7 @@ let observer: IntersectionObserver | null = null;
 
 onMounted(() => {
   isLoaded.value = true;
+  particles.value = generateParticles();
 
   if (containerRef.value) {
     observer = new IntersectionObserver(
